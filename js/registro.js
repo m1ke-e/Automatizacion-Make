@@ -5,6 +5,7 @@ const customerField = document.getElementById("customer");
 const observationsField = document.getElementById("observations");
 const submitButton = document.getElementById("submitDispatch");
 const requestStatus = document.getElementById("requestStatus");
+const webhookUrl = window.MAKE_WEBHOOK_URL || "";
 
 function showRequestStatus(message, type) {
 	requestStatus.textContent = message;
@@ -120,9 +121,13 @@ function parseResponseBody(responseText) {
 }
 
 async function sendDispatch(data) {
+	if (!webhookUrl.trim()) {
+		throw new Error("CONFIG_ERROR");
+	}
+
 	let response;
 	try {
-		response = await fetch(MAKE_WEBHOOK_URL, {
+		response = await fetch(webhookUrl, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
@@ -171,7 +176,12 @@ dispatchForm.addEventListener("submit", async (event) => {
 		const response = await sendDispatch(data);
 		showDispatchResult(response);
 	} catch (error) {
-		if (error.message.startsWith("HTTP_ERROR_")) {
+		if (error.message === "CONFIG_ERROR") {
+			showDispatchResult({
+				resultado: "ERROR DE COMUNICACIÓN",
+				mensaje: "El webhook de Make no está configurado en este despliegue."
+			});
+		} else if (error.message.startsWith("HTTP_ERROR_")) {
 			const statusCode = error.message.replace("HTTP_ERROR_", "");
 			showDispatchResult({
 				resultado: "ERROR DE COMUNICACIÓN",

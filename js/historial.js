@@ -1,6 +1,7 @@
 const historyRows = document.getElementById("historyRows");
 const historyStatus = document.getElementById("historyStatus");
 const refreshHistoryButton = document.getElementById("refreshHistory");
+const webhookUrl = window.MAKE_WEBHOOK_URL || "";
 
 const DEVELOPMENT_MOVEMENTS = [
 	{
@@ -133,7 +134,7 @@ async function loadHistory() {
 	refreshHistoryButton.disabled = true;
 	refreshHistoryButton.textContent = "Cargando...";
 
-	if (!MAKE_WEBHOOK_URL.trim()) {
+	if (!webhookUrl.trim()) {
 		renderMovements(DEVELOPMENT_MOVEMENTS);
 		showHistoryStatus("Datos mock de desarrollo. Configura MAKE_WEBHOOK_URL en js/config.js para consultar movimientos reales.", "warning");
 		refreshHistoryButton.disabled = false;
@@ -145,7 +146,7 @@ async function loadHistory() {
 	historyRows.replaceChildren();
 
 	try {
-		const response = await fetch(MAKE_WEBHOOK_URL, {
+		const response = await fetch(webhookUrl, {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
