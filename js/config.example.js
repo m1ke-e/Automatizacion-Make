@@ -1,1 +1,0 @@
-window.MAKE_WEBHOOK_URL = "";
