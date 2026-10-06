@@ -2,39 +2,6 @@ const historyRows = document.getElementById("historyRows");
 const historyStatus = document.getElementById("historyStatus");
 const refreshHistoryButton = document.getElementById("refreshHistory");
 
-const DEVELOPMENT_MOVEMENTS = [
-	{
-		fecha: "2026-10-05",
-		codigoProducto: "INS-0101",
-		producto: "Harina de trigo x 25 kg",
-		cantidad: 10,
-		cliente: "Cliente de prueba",
-		resultado: "APROBADO",
-		saldoAnterior: 48,
-		saldoNuevo: 38
-	},
-	{
-		fecha: "2026-10-05",
-		codigoProducto: "INS-0102",
-		producto: "Azúcar refinada x 50 kg",
-		cantidad: 5,
-		cliente: "Cliente de prueba",
-		resultado: "APROBADO CON ALERTA",
-		saldoAnterior: 12,
-		saldoNuevo: 7
-	},
-	{
-		fecha: "2026-10-05",
-		codigoProducto: "INS-0204",
-		producto: "Arroz blanco x 25 kg",
-		cantidad: 7,
-		cliente: "Cliente de prueba",
-		resultado: "APROBADO CON ALERTA",
-		saldoAnterior: 7,
-		saldoNuevo: 0
-	}
-];
-
 function createTextElement(tagName, className, text) {
 	const element = document.createElement(tagName);
 	element.className = className;
@@ -59,7 +26,7 @@ function renderMovements(movements) {
 	if (movements.length === 0) {
 		const row = document.createElement("tr");
 		const cell = createTextElement("td", "text-center text-body-secondary py-4", "No hay movimientos para mostrar.");
-		cell.colSpan = 6;
+		cell.colSpan = 10;
 		row.append(cell);
 		historyRows.append(row);
 		return;
@@ -67,12 +34,20 @@ function renderMovements(movements) {
 
 	for (const movement of movements) {
 		const row = document.createElement("tr");
+		if (String(movement.estado || "").trim().toLocaleLowerCase("es") === "rechazado") {
+			row.classList.add("table-danger");
+		}
 		const values = [
+			movement.estado,
+			movement.operacion,
 			movement.fecha,
 			movement.codigo || movement.codigoProducto,
 			movement.producto,
-			movement.cliente,
 			movement.cantidad,
+			movement.cliente,
+			movement.correo,
+			movement.destino,
+			movement.motivo,
 			movement.observaciones
 		];
 
@@ -94,12 +69,17 @@ function normalizeMovements(data) {
 
 		if (Object.hasOwn(movement, "0")) {
 			return {
-				fecha: movement["0"],
-				codigo: movement["1"],
-				producto: movement["2"],
-				cliente: movement["3"],
-				cantidad: movement["4"],
-				observaciones: movement["5"]
+				estado: movement["0"],
+				operacion: movement["1"],
+				fecha: movement["2"],
+				codigo: movement["3"],
+				producto: movement["4"],
+				cantidad: movement["5"],
+				cliente: movement["6"],
+				correo: movement["7"],
+				destino: movement["8"],
+				motivo: movement["9"],
+				observaciones: movement["10"]
 			};
 		}
 
@@ -121,7 +101,7 @@ function normalizeMovements(data) {
 		if (values.length > 0 && values.every((value) => value && typeof value === "object")) {
 			return values.map(normalizeMovement);
 		}
-		if (data.fecha || data.codigo || data.codigoProducto || data.producto || Object.hasOwn(data, "0")) {
+		if (data.estado  || data.operacion || data.fecha || data.codigo || data.codigoProducto || data.producto || Object.hasOwn(data, "0")) {
 			return [normalizeMovement(data)];
 		}
 	}
@@ -134,8 +114,8 @@ async function loadHistory() {
 	refreshHistoryButton.textContent = "Cargando...";
 
 	if (!MAKE_WEBHOOK_URL.trim()) {
-		renderMovements(DEVELOPMENT_MOVEMENTS);
-		showHistoryStatus("Datos mock de desarrollo. Configura MAKE_WEBHOOK_URL en js/config.js para consultar movimientos reales.", "warning");
+		renderMovements([]);
+		showHistoryStatus("Configura MAKE_WEBHOOK_URL en js/config.js para consultar movimientos reales.", "warning");
 		refreshHistoryButton.disabled = false;
 		refreshHistoryButton.textContent = "Actualizar";
 		return;
@@ -152,10 +132,6 @@ async function loadHistory() {
 				"Accept": "application/json"
 			},
 			body: JSON.stringify({
-				codigoProducto: null,
-				cantidad: null,
-				cliente: null,
-				observaciones: null,
 				operacion: "historial"
 			})
 		});

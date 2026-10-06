@@ -2,6 +2,9 @@ const dispatchForm = document.getElementById("dispatchForm");
 const productCodeField = document.getElementById("productCode");
 const quantityField = document.getElementById("quantity");
 const customerField = document.getElementById("customer");
+const emailField = document.getElementById("email");
+const destinationField = document.getElementById("destination");
+const reasonField = document.getElementById("reason");
 const observationsField = document.getElementById("observations");
 const submitButton = document.getElementById("submitDispatch");
 const requestStatus = document.getElementById("requestStatus");
@@ -160,6 +163,9 @@ dispatchForm.addEventListener("submit", async (event) => {
 		codigoProducto: productCodeField.value,
 		cantidad: Number(quantityField.value),
 		cliente: customerField.value.trim(),
+		correo: emailField.value.trim(),
+		destino: destinationField.value.trim(),
+		motivo: reasonField.value,
 		observaciones: observationsField.value.trim()
 	};
 

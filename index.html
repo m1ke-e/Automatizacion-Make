@@ -68,6 +68,26 @@
 							<input class="form-control" id="customer" name="cliente" type="text" autocomplete="organization" required>
 						</div>
 
+						<div class="col-12 col-md-6">
+							<label for="email" class="form-label">Correo</label>
+							<input class="form-control" id="email" name="correo" type="email" autocomplete="email" required>
+						</div>
+
+						<div class="col-12 col-md-6">
+							<label for="destination" class="form-label">Destino</label>
+							<input class="form-control" id="destination" name="destino" type="text" required>
+						</div>
+
+						<div class="col-12">
+							<label for="reason" class="form-label">Motivo</label>
+							<select class="form-select" id="reason" name="motivo" required>
+								<option value="" selected disabled>Selecciona un motivo</option>
+								<option value="despacho">Despacho</option>
+								<option value="traslado entre sedes">Traslado entre sedes</option>
+								<option value="avería">Avería</option>
+							</select>
+						</div>
+
 						<div class="col-12">
 							<label for="observations" class="form-label">Observaciones <span class="text-body-secondary">(opcional)</span></label>
 							<textarea class="form-control" id="observations" name="observaciones" rows="3"></textarea>
