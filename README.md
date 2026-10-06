@@ -22,15 +22,6 @@ Aplicación web para la gestión de inventario y despachos de Distribuidora La Q
 * Consulta del historial de movimientos.
 * Integración mediante webhook entre la aplicación y Make.
 
-## Estructura
-distribuidora-la-quinta/
-├── index.html
-├── historial.html
-├── css/
-│   └── styles.css
-└── js/
-    ├── registro.js
-    └── historial.js
 
 ## Almacenamiento
 
